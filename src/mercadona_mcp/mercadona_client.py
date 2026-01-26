@@ -231,6 +231,42 @@ class MercadonaClient:
             
         return self.update_cart_items(list(lines_map.values()))
 
+    def add_to_cart_bulk(self, items: List[Dict[str, Any]]) -> bool:
+        """
+        Adds multiple items to the existing cart (merges with existing).
+        items format: [{"product_id": "123", "quantity": 2}, ...]
+        """
+        current_cart = self.get_cart()
+        if not current_cart:
+            return False
+
+        lines_map = {}
+        for line in current_cart.get("lines", []):
+            pid = line["product"]["id"]
+            lines_map[pid] = {
+                "product_id": pid,
+                "quantity": line["quantity"]
+            }
+        
+        # Add or update with new items
+        for item in items:
+            product_id = item.get("product_id")
+            quantity = item.get("quantity", 1)
+            
+            if not product_id:
+                continue
+                
+            if product_id in lines_map:
+                lines_map[product_id]["quantity"] += quantity
+            else:
+                lines_map[product_id] = {
+                    "product_id": product_id,
+                    "quantity": quantity
+                }
+            
+        return self.update_cart_items(list(lines_map.values()))
+
+
     def remove_from_cart(self, product_id: str) -> bool:
         """Removes an item from the cart."""
         current_cart = self.get_cart()
@@ -247,6 +283,10 @@ class MercadonaClient:
                 })
         
         return self.update_cart_items(lines)
+
+    def clear_cart(self) -> bool:
+        """Clears all items from the shopping cart."""
+        return self.update_cart_items([])
 
     def list_orders(self, limit: int = 5) -> List[Dict[str, Any]]:
         """Lists recent orders."""

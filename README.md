@@ -79,7 +79,7 @@ This server requires a valid Mercadona session token.
 ### Option B: AI-Assisted Login (Orchestrated)
 If your AI assistant has access to a **Browser Tool** (like `puppeteer-mcp` or `browser-mcp`), it can perform the login for you:
 1.  Ask the AI: *"Log me in to Mercadona."*
-2.  The AI will use `get_login_instructions` and then its Browser Tool to open the login page.
+2.  The AI will use `login` and then its Browser Tool to open the login page.
 3.  After you log in, the AI will grab the token (`MO-user`) and location (`__mo_da` cookie) and save them using `set_credentials` and `set_location`.
 
 ## Available Tools
@@ -92,9 +92,31 @@ If your AI assistant has access to a **Browser Tool** (like `puppeteer-mcp` or `
 | `add_to_cart` | Add an item to the cart. |
 | `remove_from_cart` | Remove an item from the cart. |
 | `list_recent_orders` | View your past orders. |
+| `calculate_smart_cart` | Analyze order history and generate smart shopping recommendations. |
 | `set_credentials` | Save session token (`MO-user`) to config. |
 | `set_location` | Save `postal_code` and `warehouse_id` to config. |
-| `get_login_instructions` | Guides an AI on how to perform the login flow. |
+| `login` | Guides an AI on how to perform the login flow. |
 
 ## Resources
 *   `mercadona://cart`: Real-time JSON view of your shopping cart.
+*   `mercadona://smart_cart`: View the last smart cart calculation results.
+*   `mercadona://recent_orders`: View your 20 most recent orders.
+
+## TODO
+
+### Caching Layer
+- [ ] Add `sync_orders` tool to fetch and cache orders locally (`~/.mercadona_orders.json`)
+- [ ] Update `calculate_smart_cart` to read from cache instead of API
+- [ ] Update `mercadona://recent_orders` resource to use cache with API fallback
+- [ ] Add cache invalidation/refresh logic (timestamp-based)
+
+### Additional Resources
+- [ ] `mercadona://order/{order_id}` - Specific order details with line items
+- [ ] `mercadona://product/{product_id}` - Product details for context
+- [ ] `mercadona://categories` - Product categories/browse structure
+
+### Improvements
+- [ ] Hybrid resource strategy: check cache first, fall back to API if stale/missing
+- [ ] Add cache metadata (last_updated, ttl)
+- [ ] Make `calculate_smart_cart` faster by using cached order data
+
