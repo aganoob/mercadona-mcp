@@ -41,3 +41,4 @@ cursor_changes.log
 .idea/
 .vscode/
 *.swp
+.agent
