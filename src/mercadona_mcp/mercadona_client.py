@@ -9,7 +9,7 @@ class MercadonaClient:
     BASE_URL = "https://tienda.mercadona.es/api"
 
     def __init__(self, auth_file: Optional[str] = None):
-        self.auth_file = auth_file or os.getenv("MERCADONA_AUTH_FILE", "auth_config.json")
+        self.auth_file = auth_file or os.getenv("MERCADONA_AUTH_FILE", os.path.expanduser("~/.mercadona_auth.json"))
         self.token = None
         self.uuid = None
         self.warehouse_id = "4115" # Default to Valencia

@@ -11,37 +11,38 @@ This server allows AI assistants (like Claude) to search for products, manage yo
 
 ## Installation & Usage
 
-### Method 1: Installation-Free (Recommended)
-You can run the server directly using `uvx` (or `pipx`) without cloning the repo, provided you have the source available (e.g., local path or git).
+### Method 1: Installation-Free (Recommended via uvx)
+You can run the server directly using `uvx` (part of the `uv` package manager). This requires no manual installation or cloning.
 
-**Configuration for MCP Client (Visual Studio Code / Claude Desktop):**
+**MCP Client Configuration (e.g., Claude Desktop, Cursor):**
 
 ```json
 {
   "mcpServers": {
     "mercadona": {
       "command": "uvx",
-      "args": ["mercadona-mcp"], 
-      "env": {
-        "MERCADONA_AUTH_FILE": "/absolute/path/to/your/auth_config.json"
-      }
+      "args": ["--from", "git+https://github.com/aganoob/mercadona-mcp", "mercadona-mcp"]
     }
   }
 }
 ```
-*Note: If installing from a specific directory, use `args: ["/path/to/mercadona-mcp"]` or pip install it first.*
 
-### Method 2: Manual Setup
-1.  **Clone the repository**:
+By default, the server looks for credentials in `~/.mercadona_auth.json`. You can override this by adding an environment variable:
+
+```json
+      "env": {
+        "MERCADONA_AUTH_FILE": "/path/to/custom/auth_config.json"
+      }
+```
+
+### Method 2: Manual Installation via pip
+1.  **Clone and Install**:
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/aganoob/mercadona-mcp
     cd mercadona-mcp
-    ```
-2.  **Install dependencies**:
-    ```bash
     pip install .
     ```
-3.  **Run the server**:
+2.  **Run**:
     ```bash
     mercadona-mcp
     ```
@@ -50,13 +51,12 @@ You can run the server directly using `uvx` (or `pipx`) without cloning the repo
 
 This server requires a valid Mercadona session token.
 
-### Option A: Manual Setup
 1.  Log in to [tienda.mercadona.es](https://tienda.mercadona.es).
 2.  Open Developer Tools (F12) -> **Application** -> **Local Storage**.
 3.  Copy the value of the key `MO-user`.
 4.  Open Developer Tools (F12) -> **Application** -> **Cookies**.
 5.  Find the `__mo_da` cookie and decode/copy its value (contains `warehouse` and `postalCode`).
-6.  Create `auth_config.json` with structure:
+6.  Create the file `~/.mercadona_auth.json` (or your custom path) with the following structure:
     ```json
     {
       "local_storage": {
@@ -69,7 +69,6 @@ This server requires a valid Mercadona session token.
       "cookies": {}
     }
     ```
-7.  Point the `MERCADONA_AUTH_FILE` environment variable to this file.
 
 ### Option B: AI-Assisted Login (Orchestrated)
 If your AI assistant has access to a **Browser Tool** (like `puppeteer-mcp` or `browser-mcp`), it can perform the login for you:
