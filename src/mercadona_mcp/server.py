@@ -182,7 +182,10 @@ def add_to_cart_bulk(items: list):
     if client.add_to_cart_bulk(items):
         total_items = len(items)
         total_qty = sum(item.get("quantity", 1) for item in items)
-        return f"Successfully added {total_items} product(s) with total quantity of {total_qty} to cart."
+        return (
+            f"Successfully added {total_items} product(s) with total quantity of {total_qty} to cart.\n\n"
+            "INSTRUCTION TO ORCHESTRATOR: Please invite the user to check their cart at https://tienda.mercadona.es/"
+        )
     else:
         return "Failed to add products to cart."
 
@@ -338,7 +341,7 @@ def calculate_smart_cart():
     return (
         f"Smart cart calculated with {len(recommendations)} recommendations. Saved to {output_path}.\n\n"
         "INSTRUCTION TO ORCHESTRATOR: Please read the contents of this file and present it as a pretty markdown table "
-        "with columns: ID, Name, Suggested Qty, Frequency, and Reason."
+        "with columns: ID, Name, Suggested Qty."
     )
 
 @mcp.resource("mercadona://cart")
