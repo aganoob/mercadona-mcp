@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import time
-from src.mercadona_mcp.mercadona_client import MercadonaClient
+from mercadona_mcp.mercadona_client import MercadonaClient
 
 def run_test_scenario():
     print("=== Testing Scenario: The Morning Milk Run ===")

@@ -1,5 +1,5 @@
 from mcp.server.fastmcp import FastMCP
-from src.mercadona_mcp.mercadona_client import MercadonaClient
+from .mercadona_client import MercadonaClient
 import json
 
 # Initialize Server
