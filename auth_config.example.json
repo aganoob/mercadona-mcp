@@ -1,0 +1,6 @@
+{
+    "local_storage": {
+        "MO-user": "{\"token\": \"YOUR_JWT_TOKEN_HERE\", \"uuid\": \"YOUR_USER_UUID_HERE\", \"username\": \"user@example.com\"}"
+    },
+    "cookies": {}
+}

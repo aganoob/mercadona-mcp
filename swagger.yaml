@@ -1,0 +1,1054 @@
+openapi: 3.0.0
+info:
+  title: Mercadona Web API
+  version: 1.0.0
+  description: |
+    Unofficial API definition for the Mercadona Online Store (tienda.mercadona.es).
+    
+    ## Key Features
+    - **Catalog**: Browse categories (`/categories/`) and products.
+    - **Orders**: View order history and detailed line items (`/customers/{uuid}/orders/`).
+    - **Auth**: Requires `Bearer` token (JWT) in the `Authorization` header.
+servers:
+- url: https://tienda.mercadona.es/api
+  description: Main API
+- url: https://7UZJKL1DJ0-dsn.algolia.net/1/indexes/products_prod_{warehouse}_es
+  description: Algolia Search API (Replace {warehouse} with ID, e.g., 4115 for Valencia)
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CategoryList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+        previous:
+          type: string
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              order:
+                type: integer
+              is_extended:
+                type: boolean
+              categories:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    order:
+                      type: integer
+                    layout:
+                      type: integer
+                    published:
+                      type: boolean
+                    is_extended:
+                      type: boolean
+    CategoryDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        order:
+          type: integer
+        layout:
+          type: integer
+        published:
+          type: boolean
+        is_extended:
+          type: boolean
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              order:
+                type: integer
+              layout:
+                type: integer
+              published:
+                type: boolean
+              is_extended:
+                type: boolean
+              image:
+                type: string
+              subtitle:
+                type: string
+              products:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    slug:
+                      type: string
+                    limit:
+                      type: integer
+                    badges:
+                      type: object
+                      properties:
+                        is_water:
+                          type: boolean
+                        requires_age_check:
+                          type: boolean
+                    status:
+                      type: string
+                    packaging:
+                      type: string
+                    published:
+                      type: boolean
+                    share_url:
+                      type: string
+                    thumbnail:
+                      type: string
+                    categories:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          name:
+                            type: string
+                          level:
+                            type: integer
+                          order:
+                            type: integer
+                    display_name:
+                      type: string
+                    unavailable_from:
+                      type: string
+                    price_instructions:
+                      type: object
+                      properties:
+                        iva:
+                          type: string
+                        is_new:
+                          type: boolean
+                        is_pack:
+                          type: boolean
+                        pack_size:
+                          type: string
+                        unit_name:
+                          type: string
+                        unit_size:
+                          type: number
+                        bulk_price:
+                          type: string
+                        unit_price:
+                          type: string
+                        approx_size:
+                          type: boolean
+                        size_format:
+                          type: string
+                        total_units:
+                          type: string
+                        unit_selector:
+                          type: boolean
+                        bunch_selector:
+                          type: boolean
+                        drained_weight:
+                          type: string
+                        selling_method:
+                          type: integer
+                        tax_percentage:
+                          type: string
+                        price_decreased:
+                          type: boolean
+                        reference_price:
+                          type: string
+                        min_bunch_amount:
+                          type: number
+                        reference_format:
+                          type: string
+                        previous_unit_price:
+                          type: string
+                        increment_bunch_amount:
+                          type: number
+                    unavailable_weekdays:
+                      type: array
+                      items:
+                        type: object
+    ProductDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        ean:
+          type: string
+        slug:
+          type: string
+        brand:
+          type: string
+        limit:
+          type: integer
+        badges:
+          type: object
+          properties:
+            is_water:
+              type: boolean
+            requires_age_check:
+              type: boolean
+        origin:
+          type: string
+        photos:
+          type: array
+          items:
+            type: object
+            properties:
+              zoom:
+                type: string
+              regular:
+                type: string
+              thumbnail:
+                type: string
+              perspective:
+                type: integer
+        status:
+          type: string
+        details:
+          type: object
+          properties:
+            brand:
+              type: string
+            origin:
+              type: string
+            suppliers:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+            legal_name:
+              type: string
+            description:
+              type: string
+            counter_info:
+              type: string
+            danger_mentions:
+              type: string
+            alcohol_by_volume:
+              type: string
+            mandatory_mentions:
+              type: string
+            production_variant:
+              type: string
+            usage_instructions:
+              type: string
+            storage_instructions:
+              type: string
+        is_bulk:
+          type: boolean
+        packaging:
+          type: string
+        published:
+          type: boolean
+        share_url:
+          type: string
+        thumbnail:
+          type: string
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              level:
+                type: integer
+              order:
+                type: integer
+              categories:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    level:
+                      type: integer
+                    order:
+                      type: integer
+                    categories:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          name:
+                            type: string
+                          level:
+                            type: integer
+                          order:
+                            type: integer
+        extra_info:
+          type: array
+          items:
+            type: string
+        display_name:
+          type: string
+        unavailable_from:
+          type: string
+        is_variable_weight:
+          type: boolean
+        price_instructions:
+          type: object
+          properties:
+            iva:
+              type: string
+            is_new:
+              type: boolean
+            is_pack:
+              type: boolean
+            pack_size:
+              type: string
+            unit_name:
+              type: string
+            unit_size:
+              type: number
+            bulk_price:
+              type: string
+            unit_price:
+              type: string
+            approx_size:
+              type: boolean
+            size_format:
+              type: string
+            total_units:
+              type: string
+            unit_selector:
+              type: boolean
+            bunch_selector:
+              type: boolean
+            drained_weight:
+              type: string
+            selling_method:
+              type: integer
+            tax_percentage:
+              type: string
+            price_decreased:
+              type: boolean
+            reference_price:
+              type: string
+            min_bunch_amount:
+              type: number
+            reference_format:
+              type: string
+            previous_unit_price:
+              type: string
+            increment_bunch_amount:
+              type: number
+        unavailable_weekdays:
+          type: array
+          items:
+            type: object
+        nutrition_information:
+          type: object
+          properties:
+            allergens:
+              type: string
+            ingredients:
+              type: string
+    OrderList:
+      type: object
+      properties:
+        next_page:
+          type: string
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              address:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  address:
+                    type: string
+                  address_detail:
+                    type: string
+                  town:
+                    type: string
+                  comments:
+                    type: string
+                  entered_manually:
+                    type: boolean
+                  latitude:
+                    type: string
+                  longitude:
+                    type: string
+                  permanent_address:
+                    type: boolean
+                  postal_code:
+                    type: string
+              changes_until:
+                type: string
+              customer_phone:
+                type: string
+              end_date:
+                type: string
+              final_price:
+                type: boolean
+              order_id:
+                type: integer
+              payment_method:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  credit_card_type:
+                    type: integer
+                  credit_card_number:
+                    type: string
+                  expires_month:
+                    type: string
+                  expires_year:
+                    type: string
+                  default_card:
+                    type: boolean
+                  expiration_status:
+                    type: string
+              payment_status:
+                type: integer
+              phone_country_code:
+                type: string
+              phone_national_number:
+                type: string
+              price:
+                type: string
+              products_count:
+                type: integer
+              slot:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  start:
+                    type: string
+                  end:
+                    type: string
+                  price:
+                    type: string
+                  available:
+                    type: boolean
+                  cutoff_time:
+                    type: string
+                  timezone:
+                    type: string
+              slot_size:
+                type: integer
+              start_date:
+                type: string
+              status:
+                type: integer
+              status_ui:
+                type: string
+              summary:
+                type: object
+                properties:
+                  products:
+                    type: string
+                  slot:
+                    type: string
+                  slot_bonus:
+                    type: string
+                  total:
+                    type: string
+                  taxes:
+                    type: string
+                  tax_type:
+                    type: string
+                  tax_base:
+                    type: string
+                  volume_extra_cost:
+                    type: object
+                    properties:
+                      threshold:
+                        type: integer
+                      cost_by_extra_liter:
+                        type: string
+                      total_extra_liters:
+                        type: number
+                      total:
+                        type: string
+              service_rating_token:
+                type: string
+              click_and_collect:
+                type: boolean
+              warehouse_code:
+                type: string
+              last_edit_message:
+                type: string
+              timezone:
+                type: string
+    OrderDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        order_id:
+          type: integer
+        changes_until:
+          type: string
+        phone_country_code:
+          type: string
+        phone_national_number:
+          type: string
+        price:
+          type: string
+        payment_status:
+          type: integer
+        products_count:
+          type: integer
+        slot_size:
+          type: integer
+        status_ui:
+          type: string
+        warehouse_code:
+          type: string
+        timezone:
+          type: string
+        service_rating_token:
+          type: string
+        last_edit_message:
+          type: string
+        is_bill_requested:
+          type: boolean
+        address:
+          type: object
+          properties:
+            id:
+              type: integer
+            address:
+              type: string
+            address_detail:
+              type: string
+            town:
+              type: string
+            postal_code:
+              type: string
+            comments:
+              type: string
+            entered_manually:
+              type: boolean
+            latitude:
+              type: string
+            longitude:
+              type: string
+            permanent_address:
+              type: boolean
+        payment_method:
+          type: object
+          properties:
+            id:
+              type: integer
+            credit_card_type:
+              type: integer
+            credit_card_number:
+              type: string
+            expires_month:
+              type: string
+            expires_year:
+              type: string
+            default_card:
+              type: boolean
+            expiration_status:
+              type: string
+            ui_content:
+              type: object
+              properties:
+                title:
+                  type: string
+                subtitle:
+                  type: string
+                icon_url:
+                  type: string
+                icon:
+                  type: object
+                  properties:
+                    url:
+                      type: string
+                    content_description:
+                      type: string
+        slot:
+          type: object
+          properties:
+            id:
+              type: string
+            start:
+              type: string
+            end:
+              type: string
+            price:
+              type: string
+            available:
+              type: boolean
+            cutoff_time:
+              type: string
+            timezone:
+              type: string
+        summary:
+          type: object
+          properties:
+            products:
+              type: string
+            slot:
+              type: string
+            slot_bonus:
+              type: string
+            total:
+              type: string
+            taxes:
+              type: string
+            tax_type:
+              type: string
+            tax_base:
+              type: string
+            volume_extra_cost:
+              type: object
+              properties:
+                threshold:
+                  type: integer
+                cost_by_extra_liter:
+                  type: string
+                total_extra_liters:
+                  type: number
+                total:
+                  type: string
+        rescheduled_order:
+          type: string
+    OrderLines:
+      type: object
+      properties:
+        next_page:
+          type: string
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              ordered_quantity:
+                type: number
+              prepared_quantity:
+                type: number
+              preparation_result:
+                type: string
+              total_prepared_price:
+                type: string
+              product_id:
+                type: string
+              product:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  slug:
+                    type: string
+                  limit:
+                    type: integer
+                  badges:
+                    type: object
+                    properties:
+                      is_water:
+                        type: boolean
+                      requires_age_check:
+                        type: boolean
+                  status:
+                    type: string
+                  packaging:
+                    type: string
+                  published:
+                    type: boolean
+                  share_url:
+                    type: string
+                  thumbnail:
+                    type: string
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        level:
+                          type: integer
+                        order:
+                          type: integer
+                  display_name:
+                    type: string
+                  unavailable_from:
+                    type: string
+                  price_instructions:
+                    type: object
+                    properties:
+                      iva:
+                        type: string
+                      is_new:
+                        type: boolean
+                      is_pack:
+                        type: boolean
+                      pack_size:
+                        type: string
+                      unit_name:
+                        type: string
+                      unit_size:
+                        type: number
+                      bulk_price:
+                        type: string
+                      unit_price:
+                        type: string
+                      approx_size:
+                        type: boolean
+                      size_format:
+                        type: string
+                      total_units:
+                        type: integer
+                      unit_selector:
+                        type: boolean
+                      bunch_selector:
+                        type: boolean
+                      drained_weight:
+                        type: string
+                      selling_method:
+                        type: integer
+                      tax_percentage:
+                        type: string
+                      price_decreased:
+                        type: boolean
+                      reference_price:
+                        type: string
+                      min_bunch_amount:
+                        type: number
+                      reference_format:
+                        type: string
+                      previous_unit_price:
+                        type: string
+                      increment_bunch_amount:
+                        type: number
+                  unavailable_weekdays:
+                    type: array
+                    items:
+                      type: object
+              original_price_instructions:
+                type: object
+                properties:
+                  iva:
+                    type: string
+                  is_new:
+                    type: boolean
+                  is_pack:
+                    type: boolean
+                  pack_size:
+                    type: string
+                  unit_name:
+                    type: string
+                  unit_size:
+                    type: number
+                  bulk_price:
+                    type: string
+                  unit_price:
+                    type: string
+                  approx_size:
+                    type: boolean
+                  size_format:
+                    type: string
+                  total_units:
+                    type: integer
+                  unit_selector:
+                    type: boolean
+                  bunch_selector:
+                    type: boolean
+                  drained_weight:
+                    type: string
+                  selling_method:
+                    type: integer
+                  tax_percentage:
+                    type: string
+                  price_decreased:
+                    type: boolean
+                  reference_price:
+                    type: string
+                  min_bunch_amount:
+                    type: number
+                  reference_format:
+                    type: string
+                  previous_unit_price:
+                    type: string
+                  increment_bunch_amount:
+                    type: number
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartLine'
+        summary:
+          type: object
+          properties:
+            total:
+              type: number
+    CartLine:
+      type: object
+      properties:
+        id:
+          type: string
+        product_id:
+          type: string
+        quantity:
+          type: integer
+        product:
+          $ref: '#/components/schemas/ProductDetail'
+security:
+- bearerAuth: []
+paths:
+  /categories/:
+    get:
+      summary: Get Category Tree
+      description: Retrieve the full hierarchy of product categories.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+  /categories/{id}/:
+    get:
+      summary: Get Category Details
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDetail'
+  /products/{id}/:
+    get:
+      summary: Get Product Details
+      description: Get detailed information about a specific product, including photos, badges, and nutrition.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetail'
+  /customers/{uuid}/orders/:
+    get:
+      summary: Get Order History
+      description: List all past and current orders for the user.
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderList'
+  /customers/{uuid}/orders/{id}/:
+    get:
+      summary: Get Order Summary
+      description: Get the summary details of a specific order (address, slot, payment).
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Order details summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetail'
+  /customers/{uuid}/orders/{id}/lines/prepared/:
+    get:
+      summary: Get Order Lines (Products)
+      description: Retrieve the specific list of products (lines) prepared for a delivered order.
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: List of products in the order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderLines'
+  /customers/{uuid}/cart/:
+    get:
+      summary: Get Customer Cart
+      description: Retrieve the current shopping cart for a specific customer.
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Current cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+    put:
+      summary: Update Customer Cart
+      description: |
+        Replace the entire cart state. This is used for ALL cart modifications:
+        - Add Item: Append to `lines` and PUT.
+        - Update Quantity: Modify `lines` and PUT.
+        - Remove Item: Remove from `lines` and PUT.
+        - Clear Cart: Send empty `lines` array and PUT.
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Cart ID (required)
+                version:
+                  type: integer
+                  description: Current cart version (required)
+                lines:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      product_id:
+                        type: string
+                      quantity:
+                        type: integer
+                      sources:
+                        type: array
+                        items:
+                          type: string
+      responses:
+        '200':
+          description: Updated cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+  /query:
+    post:
+      summary: Search Products (Algolia)
+      description: Search for products using the Algolia engine.
+      parameters:
+      - name: x-algolia-application-id
+        in: query
+        required: true
+        schema:
+          type: string
+          example: 7UZJKL1DJ0
+      - name: x-algolia-api-key
+        in: query
+        required: true
+        schema:
+          type: string
+          example: 9d8f2e39e90df472b4f2e559a116fe17
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: Search term
+                userToken:
+                  type: string
+                clickAnalytics:
+                  type: boolean
+                analytics:
+                  type: boolean
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hits:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductDetail'

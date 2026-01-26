@@ -1,0 +1,18 @@
+[project]
+name = "mercadona-mcp"
+version = "0.1.0"
+description = "MCP Server for Mercadona Online Store"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp",
+    "requests",
+    "pydantic"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+mercadona-mcp = "src.server:main"
