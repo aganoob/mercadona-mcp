@@ -12,7 +12,13 @@ This server allows AI assistants (like Claude) to search for products, manage yo
 ## Installation & Usage
 
 ### Method 1: Installation-Free (Recommended via uvx)
-You can run the server directly using `uvx` (part of the `uv` package manager). This requires no manual installation or cloning.
+**Prerequisite**: You need to have `uv` installed.
+```bash
+# Install uv (Linux/macOS)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+You can then run the server directly using `uvx` (part of the `uv` package manager). This requires no manual installation or cloning.
 
 **MCP Client Configuration (e.g., Claude Desktop, Cursor):**
 
