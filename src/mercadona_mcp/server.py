@@ -335,7 +335,11 @@ def calculate_smart_cart():
     with open(output_path, "w") as f:
         json.dump(output, f, indent=2)
     
-    return f"Smart cart calculated with {len(recommendations)} recommendations. Saved to {output_path}"
+    return (
+        f"Smart cart calculated with {len(recommendations)} recommendations. Saved to {output_path}.\n\n"
+        "INSTRUCTION TO ORCHESTRATOR: Please read the contents of this file and present it as a pretty markdown table "
+        "with columns: ID, Name, Suggested Qty, Frequency, and Reason."
+    )
 
 @mcp.resource("mercadona://cart")
 def resource_cart() -> str:
@@ -355,7 +359,11 @@ def resource_smart_cart() -> str:
     with open(output_path, "r") as f:
         data = json.load(f)
     
-    return json.dumps(data, indent=2)
+    return (
+        f"{json.dumps(data, indent=2)}\n\n"
+        "INSTRUCTION TO ORCHESTRATOR: Please present the 'items' from the JSON data above as a pretty markdown table "
+        "with columns: ID, Name, Suggested Qty, Frequency, and Reason."
+    )
 
 @mcp.resource("mercadona://recent_orders")
 def resource_recent_orders() -> str:
