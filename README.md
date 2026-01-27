@@ -1,26 +1,17 @@
 # Mercadona MCP Server
 
+![Claude Desktop](https://img.shields.io/badge/Claude%20Desktop-Compatible-f54e00?style=flat&logo=anthropic)
+![Cursor](https://img.shields.io/badge/Cursor-Compatible-000000?style=flat&logo=cursor)
+![Antigravity](https://img.shields.io/badge/Antigravity-Compatible-8a2be2?style=flat)
+
 An **MCP Server** for the [Mercadona Online Store](https://tienda.mercadona.es).
-This server allows AI assistants (like Claude) to search for products, manage your shopping cart, and view your order history.
+This server gives AI assistants (like Claude or Cursor) superpowers to manage your grocery shopping: search products, build carts, and analyze your history.
 
-## Features
-*   **Product Search**: Search for products (via Algolia) and get prices/details.
-*   **Cart Management**: Inspect, add, update, and remove items from your cart.
-*   **Order History**: List recent orders and view details.
-*   **Authentication**: Securely manage your session credentials.
+---
 
-## Installation & Usage
+## 🚀 Quick Start
 
-### Method 1: Installation-Free (Recommended via uvx)
-**Prerequisite**: You need to have `uv` installed.
-```bash
-# Install uv (Linux/macOS)
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-You can then run the server directly using `uvx` (part of the `uv` package manager). This requires no manual installation or cloning.
-
-**MCP Client Configuration (e.g., Claude Desktop, Cursor):**
+Add this to your `claude_desktop_config.json` or Cursor MCP settings. No manual installation required!
 
 ```json
 {
@@ -33,90 +24,88 @@ You can then run the server directly using `uvx` (part of the `uv` package manag
 }
 ```
 
-By default, the server looks for credentials in `~/.mercadona_auth.json`. You can override this by adding an environment variable:
+> **First Run:** You need to log in. Just ask your AI: **"Log me in to Mercadona"** and follow the instructions it gives you (it uses the `login` tool).
 
-```json
-      "env": {
-        "MERCADONA_AUTH_FILE": "/path/to/custom/auth_config.json"
-      }
-```
+---
 
-### Method 2: Manual Installation via pip
-1.  **Clone and Install**:
-    ```bash
-    git clone https://github.com/aganoob/mercadona-mcp
-    cd mercadona-mcp
-    pip install .
-    ```
-2.  **Run**:
-    ```bash
-    mercadona-mcp
-    ```
+## ✨ Capabilities
 
-## Authentication
+### 🛒 Product Search & Details
+*   **Search**: find products by name (e.g., "leche", "hummus"). The server filters out unavailable items.
+*   **Details**: Get full specs, packaging info, and nutrition facts.
 
-This server requires a valid Mercadona session token.
+### 📦 Complete Cart Management
+*   **View Cart**: See what's currently in your basket and the total price.
+*   **Add/Remove**: Add single items or **bulk add** multiple items at once.
+*   **Clear**: Empty the entire cart in one go.
 
+### 🧠 Smart Cart (AI-Powered)
+*   **Predictive Shopping**: The `calculate_smart_cart` tool analyzes your last year of orders to find items you buy regularly (e.g., every 2 weeks) and checks if you are due for a restock.
+*   **Resource**: View the results anytime at `mercadona://smart_cart`.
+
+### 📜 Order History
+*   **Recent Orders**: List your last purchases.
+*   **Resource**: Get a fast JSON dump at `mercadona://recent_orders`.
+
+### ⚡ Live Resources
+The server exposes **MCP Resources**:
+| Resource | Description |
+| :--- | :--- |
+| `mercadona://cart` | Live JSON view of your current shopping cart. |
+| `mercadona://smart_cart` | The latest recommendations from the Smart Cart algorithm. |
+| `mercadona://recent_orders` | A list of your last 20 orders. |
+
+---
+
+## 🔐 Authentication
+
+This server needs a valid Mercadona session (`MO-user` token) and location data (`postal_code`, `warehouse_id`) to work.
+
+### Option A: AI-Assisted (Recommended)
+1.  **Ask**: "Log me in to Mercadona."
+2.  **Follow**: The AI will use the `login` tool to guide you. It usually involves:
+    *   Opening a browser to the login page.
+    *   You logging in manually.
+    *   The AI grabbing the credentials from the browser storage and saving them strictly to your local machine (`~/.mercadona_auth.json`).
+
+### Option B: Manual Setup
+If you prefer to grab the token yourself:
 1.  Log in to [tienda.mercadona.es](https://tienda.mercadona.es).
-2.  Open Developer Tools (F12) -> **Application** -> **Local Storage**.
-3.  Copy the value of the key `MO-user`.
-4.  Open Developer Tools (F12) -> **Application** -> **Cookies**.
-5.  Find the `__mo_da` cookie and decode/copy its value (contains `warehouse` and `postalCode`).
-6.  Create the file `~/.mercadona_auth.json` (or your custom path) with the following structure:
+2.  Open **Developer Tools (F12)** > **Application**.
+    *   **Local Storage**: Copy the value of `MO-user`.
+    *   **Cookies**: Find `__mo_da` and decode it (it contains your warehouse/zip).
+3.  Create `~/.mercadona_auth.json` (matches `auth_config.example.json`):
     ```json
     {
-      "local_storage": {
-        "MO-user": "PASTE_MO_USER_VALUE_HERE"
-      },
-      "location": {
-          "postal_code": "46001",
-          "warehouse_id": "4115"
-      },
-      "cookies": {}
+        "local_storage": {
+            "MO-user": "{\"token\": \"...\", \"uuid\": \"...\"}"
+        },
+        "location": {
+            "postal_code": "46001",
+            "warehouse_id": "4115"
+        }
     }
     ```
 
-### Option B: AI-Assisted Login (Orchestrated)
-If your AI assistant has access to a **Browser Tool** (like `puppeteer-mcp` or `browser-mcp`), it can perform the login for you:
-1.  Ask the AI: *"Log me in to Mercadona."*
-2.  The AI will use `login` and then its Browser Tool to open the login page.
-3.  After you log in, the AI will grab the token (`MO-user`) and location (`__mo_da` cookie) and save them using `set_credentials` and `set_location`.
+---
 
-## Available Tools
+## 🛠️ Configuration
 
-| Tool | Description |
-|------|-------------|
-| `search_products` | Search for products by name (e.g., "leche", "pan"). |
-| `get_product_details` | Get detailed info (nutrition, packaging) for a product ID. |
-| `get_cart` | View current cart items and total. |
-| `add_to_cart` | Add an item to the cart. |
-| `remove_from_cart` | Remove an item from the cart. |
-| `list_recent_orders` | View your past orders. |
-| `calculate_smart_cart` | Analyze order history and generate smart shopping recommendations. |
-| `set_credentials` | Save session token (`MO-user`) to config. |
-| `set_location` | Save `postal_code` and `warehouse_id` to config. |
-| `login` | Guides an AI on how to perform the login flow. |
+You can override the default auth file location using an environment variable:
 
-## Resources
-*   `mercadona://cart`: Real-time JSON view of your shopping cart.
-*   `mercadona://smart_cart`: View the last smart cart calculation results.
-*   `mercadona://recent_orders`: View your 20 most recent orders.
+```json
+"env": {
+  "MERCADONA_AUTH_FILE": "/absolute/path/to/my_auth.json"
+}
+```
 
-## TODO
+## 👩‍💻 Development
 
-### Caching Layer
-- [ ] Add `sync_orders` tool to fetch and cache orders locally (`~/.mercadona_orders.json`)
-- [ ] Update `calculate_smart_cart` to read from cache instead of API
-- [ ] Update `mercadona://recent_orders` resource to use cache with API fallback
-- [ ] Add cache invalidation/refresh logic (timestamp-based)
+To run from source:
 
-### Additional Resources
-- [ ] `mercadona://order/{order_id}` - Specific order details with line items
-- [ ] `mercadona://product/{product_id}` - Product details for context
-- [ ] `mercadona://categories` - Product categories/browse structure
-
-### Improvements
-- [ ] Hybrid resource strategy: check cache first, fall back to API if stale/missing
-- [ ] Add cache metadata (last_updated, ttl)
-- [ ] Make `calculate_smart_cart` faster by using cached order data
-
+```bash
+git clone https://github.com/aganoob/mercadona-mcp
+cd mercadona-mcp
+uv sync
+uv run mercadona-mcp
+```

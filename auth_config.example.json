@@ -2,5 +2,8 @@
     "local_storage": {
         "MO-user": "{\"token\": \"YOUR_JWT_TOKEN_HERE\", \"uuid\": \"YOUR_USER_UUID_HERE\", \"username\": \"user@example.com\"}"
     },
-    "cookies": {}
+    "location": {
+        "postal_code": "46001",
+        "warehouse_id": "4115"
+    }
 }
