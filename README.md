@@ -17,8 +17,8 @@ Add this to your `claude_desktop_config.json` or Cursor MCP settings. No manual 
 {
   "mcpServers": {
     "mercadona": {
-      "command": "uvx",
-      "args": ["--from", "git+https://github.com/aganoob/mercadona-mcp", "mercadona-mcp"]
+      "command": "npx",
+      "args": ["-y", "mercadona-mcp"] 
     }
   }
 }
@@ -74,7 +74,7 @@ If you prefer to grab the token yourself:
 2.  Open **Developer Tools (F12)** > **Application**.
     *   **Local Storage**: Copy the value of `MO-user`.
     *   **Cookies**: Find `__mo_da` and decode it (it contains your warehouse/zip).
-3.  Create `~/.mercadona_auth.json` (matches `auth_config.example.json`):
+3.  Create `~/.mercadona_auth.json`:
     ```json
     {
         "local_storage": {
@@ -106,6 +106,10 @@ To run from source:
 ```bash
 git clone https://github.com/aganoob/mercadona-mcp
 cd mercadona-mcp
-uv sync
-uv run mercadona-mcp
+npm install
+npm run build
+npm start
 ```
+
+### Legacy Python
+The original Python implementation is available in `legacy_python/`.

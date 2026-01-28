@@ -1,0 +1,44 @@
+{
+    "name": "mercadona-mcp",
+    "version": "1.0.1",
+    "description": "MCP Server for Mercadona Online Store",
+    "main": "dist/index.js",
+    "bin": {
+        "mercadona-mcp": "./dist/index.js"
+    },
+    "type": "module",
+    "scripts": {
+        "build": "tsc && chmod +x dist/index.js",
+        "start": "node dist/index.js",
+        "dev": "tsc --watch"
+    },
+    "keywords": [
+        "mcp",
+        "mercadona",
+        "groceries",
+        "ai"
+    ],
+    "author": "Maratz",
+    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aganoob/mercadona-mcp.git"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "package.json"
+    ],
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.1",
+        "axios": "^1.7.9",
+        "zod": "^3.24.1",
+        "dotenv": "^16.4.7",
+        "fs-extra": "^11.2.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.2",
+        "@types/fs-extra": "^11.0.4",
+        "typescript": "^5.7.2"
+    }
+}
