@@ -42,6 +42,8 @@ Add this to your `claude_desktop_config.json` or Cursor MCP settings. No manual 
 ### 🧠 Smart Cart (AI-Powered)
 *   **Predictive Shopping**: The `calculate_smart_cart` tool analyzes your last year of orders to find items you buy regularly (e.g., every 2 weeks) and checks if you are due for a restock.
 *   **Resource**: View the results anytime at `mercadona://smart_cart`.
+*   **Incremental Order Sync**: Every smart cart run first checks Mercadona for newly available orders and only downloads orders that were not already cached locally.
+*   **Faster Recalculation**: Previously downloaded order lines are reused from local cache to avoid redundant API calls on every run.
 
 ### 📜 Order History
 *   **Recent Orders**: List your last purchases.
@@ -98,6 +100,20 @@ You can override the default auth file location using an environment variable:
   "MERCADONA_AUTH_FILE": "/absolute/path/to/my_auth.json"
 }
 ```
+
+### Smart Cart Order Cache
+
+To support incremental order synchronization, the server persists order history per customer UUID:
+
+*   **Path**: `~/.mercadona_orders_cache_<uuid>.json`
+*   **Behavior**:
+    *   On each `calculate_smart_cart` call, the server fetches recent orders and appends only unseen `order.id` entries.
+    *   Cached orders include order metadata + prepared order lines used by the recommendation engine.
+    *   Recommendation output includes sync stats (`new order(s) downloaded` and `cached total`).
+*   **Why this matters**:
+    *   Speeds up repeated smart-cart calls.
+    *   Reduces repeated network traffic to the orders endpoints.
+    *   Keeps historical signal stable between runs while still ingesting new purchases.
 
 ## 👩‍💻 Development
 
