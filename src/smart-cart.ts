@@ -11,8 +11,10 @@ function mean(numbers: number[]): number {
 }
 
 export async function calculateSmartCart(client: MercadonaClient): Promise<string> {
-    const orders = await client.listOrders(100);
-    if (!orders || orders.length === 0) {
+    const syncResult = await client.syncNewOrders(100);
+    const cachedOrders = await client.getCachedOrdersWithLines();
+
+    if (!cachedOrders || cachedOrders.length === 0) {
         return "No order history found.";
     }
 
@@ -26,13 +28,14 @@ export async function calculateSmartCart(client: MercadonaClient): Promise<strin
         qtys: number[];
     }> = {};
 
-    for (const order of orders) {
-        if (!order.start_date) continue;
+    for (const cachedOrder of cachedOrders) {
+        const order = cachedOrder.order;
+        if (!order?.start_date) continue;
         const orderDate = new Date(order.start_date);
 
         if (orderDate < cutoffDate) continue;
 
-        const orderLines = await client.getOrderDetails(order.id);
+        const orderLines = cachedOrder.lines;
         if (!orderLines) continue;
 
         for (const line of orderLines) {
@@ -103,7 +106,9 @@ export async function calculateSmartCart(client: MercadonaClient): Promise<strin
     const outputPath = path.join(os.homedir(), 'smart_cart_calculation.json');
     await fs.writeJson(outputPath, output, { spaces: 2 });
 
-    return `Smart cart calculated with ${recommendations.length} recommendations. Saved to ${outputPath}.\n\n` +
+    return `Smart cart calculated with ${recommendations.length} recommendations. ` +
+        `${syncResult.added} new order(s) downloaded (${syncResult.totalCached} cached total). ` +
+        `Saved to ${outputPath}.\n\n` +
         "INSTRUCTION TO ORCHESTRATOR: Please read the contents of this file and present it as a pretty markdown table " +
         "with columns: ID, Name, Suggested Qty.";
 }

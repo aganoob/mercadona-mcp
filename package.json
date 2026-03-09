@@ -1,6 +1,6 @@
 {
     "name": "mercadona-mcp",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "MCP Server for Mercadona Online Store",
     "main": "dist/index.js",
     "bin": {

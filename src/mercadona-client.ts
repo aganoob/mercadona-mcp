@@ -4,6 +4,18 @@ import path from 'path';
 import os from 'os';
 import { AuthConfig, Cart, Product, Order } from './types.js';
 
+interface CachedOrder {
+    order: Order;
+    lines: any[];
+    synced_at: string;
+}
+
+interface OrdersCacheFile {
+    customer_uuid: string;
+    updated_at: string;
+    orders: Record<string, CachedOrder>;
+}
+
 export class MercadonaClient {
     private static ALGOLIA_APP_ID = "7UZJKL1DJ0";
     private static ALGOLIA_API_KEY = "9d8f2e39e90df472b4f2e559a116fe17";
@@ -38,6 +50,44 @@ export class MercadonaClient {
 
     private get commonParams(): string {
         return `?lang=es&wh=${this.warehouseId}`;
+    }
+
+    private get ordersCachePath(): string {
+        const customerId = this.uuid || "unknown";
+        return path.join(os.homedir(), `.mercadona_orders_cache_${customerId}.json`);
+    }
+
+    private async loadOrdersCache(): Promise<OrdersCacheFile> {
+        const customerId = this.uuid || "unknown";
+        if (!await fs.pathExists(this.ordersCachePath)) {
+            return {
+                customer_uuid: customerId,
+                updated_at: new Date(0).toISOString(),
+                orders: {}
+            };
+        }
+
+        try {
+            const data = await fs.readJson(this.ordersCachePath) as OrdersCacheFile;
+            if (!data || typeof data !== "object" || !data.orders) {
+                return {
+                    customer_uuid: customerId,
+                    updated_at: new Date(0).toISOString(),
+                    orders: {}
+                };
+            }
+            return data;
+        } catch {
+            return {
+                customer_uuid: customerId,
+                updated_at: new Date(0).toISOString(),
+                orders: {}
+            };
+        }
+    }
+
+    private async saveOrdersCache(cache: OrdersCacheFile): Promise<void> {
+        await fs.writeJson(this.ordersCachePath, cache, { spaces: 2 });
     }
 
     private loadAuth() {
@@ -256,6 +306,45 @@ export class MercadonaClient {
             console.error(`List orders error: ${e}`);
             return [];
         }
+    }
+
+    public async syncNewOrders(limit: number = 100): Promise<{ added: number; totalCached: number }> {
+        if (!this.uuid) return { added: 0, totalCached: 0 };
+
+        const recentOrders = await this.listOrders(limit);
+        const cache = await this.loadOrdersCache();
+        let added = 0;
+
+        for (const order of recentOrders) {
+            if (!order?.id || cache.orders[order.id]) continue;
+
+            const lines = await this.getOrderDetails(order.id);
+            cache.orders[order.id] = {
+                order,
+                lines: lines || [],
+                synced_at: new Date().toISOString()
+            };
+            added += 1;
+        }
+
+        if (added > 0) {
+            cache.updated_at = new Date().toISOString();
+            cache.customer_uuid = this.uuid;
+            await this.saveOrdersCache(cache);
+        }
+
+        return { added, totalCached: Object.keys(cache.orders).length };
+    }
+
+    public async getCachedOrdersWithLines(): Promise<Array<{ order: Order; lines: any[] }>> {
+        const cache = await this.loadOrdersCache();
+        return Object.values(cache.orders)
+            .map(entry => ({ order: entry.order, lines: entry.lines || [] }))
+            .sort((a, b) => {
+                const aTime = new Date(a.order?.start_date || 0).getTime();
+                const bTime = new Date(b.order?.start_date || 0).getTime();
+                return bTime - aTime;
+            });
     }
 
     public async getOrderDetails(orderId: string): Promise<any[]> {
